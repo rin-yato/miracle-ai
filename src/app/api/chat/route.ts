@@ -1,12 +1,9 @@
-import { NextResponse } from "next/server";
-
 import { Retriever } from "@/lib/retriever";
 
-import { LangChainStream, Message, StreamingTextResponse } from "ai";
+import { LangChainStream, StreamingTextResponse } from "ai";
 import { PromptTemplate } from "langchain";
 import { LLMChain } from "langchain/chains";
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import { AIChatMessage, HumanChatMessage } from "langchain/schema";
 import { z } from "zod";
 
 const requiredSchema = z.object({

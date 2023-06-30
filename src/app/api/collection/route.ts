@@ -1,6 +1,7 @@
-import { ChromaClient, OpenAIEmbeddingFunction } from "chromadb";
 import { NextResponse } from "next/server";
+
 import { env } from "@/env.mjs";
+import { ChromaClient, OpenAIEmbeddingFunction } from "chromadb";
 import { z } from "zod";
 
 export async function GET() {
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
 
   // initialize embedder fn
   const embeddingFunction = new OpenAIEmbeddingFunction({
-    openai_api_key: env.OPENAI_KEY,
+    openai_api_key: env.OPENAI_API_KEY,
   });
 
   // create the collection
