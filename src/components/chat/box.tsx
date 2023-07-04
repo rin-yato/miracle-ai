@@ -11,11 +11,11 @@ import { useClickOutside } from "@mantine/hooks";
 
 export function ChatBox() {
   const { setIsChatOpen } = useContext(ChatOpenContext);
-  const ref = useClickOutside(() => setIsChatOpen(false));
+  // const ref = useClickOutside(() => setIsChatOpen(false));
   return (
     <div
-      ref={ref}
-      className="flex max-h-[440px] w-96 flex-col rounded-xl border py-2 pl-2 pr-0.5"
+      // ref={ref}
+      className="z-50 flex max-h-[550px] w-96 flex-col rounded-xl border bg-white py-2 pl-2 pr-0.5 dark:bg-black"
     >
       <ChatHeader />
       <Separator className="mt-2" />

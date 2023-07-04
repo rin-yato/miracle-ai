@@ -2,15 +2,18 @@
 
 import React from "react";
 
+import useConfirmation from "@/hooks/use-confirmation";
+import useDocument from "@/hooks/use-documents";
+
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   DataTable,
   DataTablePagination,
   DataTableViewOptions,
 } from "@/components/data-table";
-import { DataTableFacetedFilter } from "@/components/data-table/faceted-filter";
 
-import { statusOptions } from "./columns";
+import { DataSource } from "../column/documents";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -21,22 +24,24 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+interface DataTableProps {
+  columns: ColumnDef<DataSource>[];
+  data: DataSource[];
   className?: string;
 }
 
-export function DataSourceDataTable<TData, TValue>({
+export function DataSourceDataTable({
   columns,
   data,
   className,
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
   const [rowSelection, setRowSelection] = React.useState({});
+  const { createConfirmation } = useConfirmation();
+  const { deleteDocument } = useDocument();
 
   const table = useReactTable({
     data,
@@ -58,6 +63,21 @@ export function DataSourceDataTable<TData, TValue>({
     enableGlobalFilter: false,
   });
 
+  const selectedRows = table.getSelectedRowModel().rows;
+
+  function handleDelete() {
+    createConfirmation({
+      type: "destructive",
+      title: `Delete ${selectedRows.length} items`,
+      description: `This is a permanent action, and cannot be undone.`,
+      onConfirm: () => {
+        selectedRows.forEach((row) => {
+          deleteDocument(row.original.id);
+        });
+      },
+    });
+  }
+
   return (
     <div className={className}>
       <div className="flex items-center gap-x-5 py-4">
@@ -69,14 +89,26 @@ export function DataSourceDataTable<TData, TValue>({
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
-        {table.getColumn("status") && (
+        {/* {table.getColumn("status") && (
           <DataTableFacetedFilter
             options={statusOptions}
             title="Status"
             column={table.getColumn("status")}
           />
-        )}
-        <DataTableViewOptions table={table} />
+        )} */}
+        <div className="ml-auto flex gap-5">
+          {!!selectedRows.length && (
+            <Button
+              size="sm"
+              variant="outline-destructive"
+              className="ml-auto"
+              onClick={handleDelete}
+            >
+              Delete {selectedRows.length} items
+            </Button>
+          )}
+          <DataTableViewOptions table={table} />
+        </div>
       </div>
       <DataTable table={table} columns={columns} data={data} />
       <div className="my-5" />

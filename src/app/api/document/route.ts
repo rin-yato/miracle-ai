@@ -1,9 +1,11 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { env } from "@/env.mjs";
+import { DB } from "@/types/schema";
+
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import axios from "axios";
-import { ChromaClient, OpenAIEmbeddingFunction } from "chromadb";
-import { Documents } from "chromadb/dist/main/types";
+import { ChromaClient } from "chromadb";
 import { convert } from "html-to-text";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
@@ -39,7 +41,7 @@ export async function GET(request: Request) {
 
 const createItemSchema = z.object({
   url: z.string(),
-  collection: z.string(),
+  collection: z.string().optional(),
 });
 
 export async function POST(request: Request) {
@@ -50,6 +52,38 @@ export async function POST(request: Request) {
   const response = await axios.get(validatedBody.url);
   const htmlContent = convert(response.data);
 
+  // initialize supabase
+  const supabase = createRouteHandlerClient<DB>({ cookies });
+
+  // get current authenticated user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user?.id) {
+    return NextResponse.json({
+      status: "ERROR",
+      message: "User not found",
+    });
+  }
+
+  // create the document in the database
+  const { data: newDocument } = await supabase
+    .from("documents")
+    .insert({
+      url: validatedBody.url,
+      activation: true,
+      user_id: user.id,
+      last_trained: new Date().toISOString(),
+    })
+    .select()
+    .single();
+  if (!newDocument?.id) {
+    return NextResponse.json({
+      status: "ERROR",
+      message: "Document not created",
+    });
+  }
+
   // initialize splitter
   const splitter = new RecursiveCharacterTextSplitter({
     chunkSize: 1000,
@@ -59,16 +93,28 @@ export async function POST(request: Request) {
   // create the document from the html content using the splitter
   const documents = await splitter.createDocuments(
     [htmlContent],
-    [{ status: "active" }]
+    // default status is active, and the id is taken from supabase
+    [{ status: "active", id: newDocument.id.toString() }]
   );
 
-  const store = await Chroma.fromDocuments(
+  // Check if collection exists otherwise create it
+  try {
+    await axios.get("http://localhost:3000/api/collection/" + user.id);
+  } catch (error) {
+    return NextResponse.json({
+      status: "ERROR",
+      message: error,
+    });
+  }
+
+  // Saving the document into chroma
+  await Chroma.fromDocuments(
     documents,
     new OpenAIEmbeddings({
-      openAIApiKey: env.OPENAI_API_KEY,
+      openAIApiKey: process.env.OPENAI_API_KEY,
     }),
     {
-      collectionName: validatedBody.collection,
+      collectionName: user.id, // collection name is the user id
     }
   );
 

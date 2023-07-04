@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { env } from "@/env.mjs";
 import { ChromaClient, OpenAIEmbeddingFunction } from "chromadb";
@@ -8,10 +8,17 @@ export async function GET() {
   const client = new ChromaClient();
   const collections = await client.listCollections();
 
-  return NextResponse.json({
-    status: "OK",
-    collections,
-  });
+  return NextResponse.json(
+    {
+      status: "OK",
+      collections,
+    },
+    {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
+    }
+  );
 }
 
 const createCollectionSchema = z.object({
@@ -34,9 +41,16 @@ export async function POST(request: Request) {
     embeddingFunction,
   });
 
-  return NextResponse.json({
-    status: "OK",
-    message: "Collection Created.",
-    data: createdCollection,
-  });
+  return NextResponse.json(
+    {
+      status: "OK",
+      message: "Collection Created.",
+    },
+    {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Allow-Methods": "POST, OPTIONS",
+      },
+    }
+  );
 }

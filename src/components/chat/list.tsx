@@ -1,15 +1,22 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Message } from "./message";
-import { useId } from "@mantine/hooks";
+import { useSessionStorage } from "@mantine/hooks";
+import { Message as MessageType } from "ai";
 import { useChat } from "ai/react";
 
 export function ChatList() {
   const mainContainer = React.useRef<HTMLDivElement>(null);
-  const { messages, isLoading } = useChat({
-    id: "dreamslab",
+  const [initialMessages, setInitialMessages] = useSessionStorage<
+    Array<MessageType>
+  >({
+    key: "initial-messages",
+  });
+
+  const { messages, isLoading, setMessages } = useChat({
+    id: "default",
   });
 
   function scrollToBottom() {
@@ -34,9 +41,9 @@ export function ChatList() {
   return (
     <div
       ref={mainContainer}
-      className="minimal-scrollbar h-[380px] max-h-[380px] overflow-y-auto pr-2"
+      className="minimal-scrollbar h-[550px] max-h-[550px] overflow-y-auto pr-2"
     >
-      <div className="flex flex-1 flex-col  justify-end gap-2">
+      <div className="flex flex-1 flex-col justify-end gap-2">
         {messages.map((message, index) => (
           <Message
             key={message.id}

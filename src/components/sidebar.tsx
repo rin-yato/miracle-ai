@@ -15,7 +15,7 @@ type Config = {
   icon: Icon;
 };
 const CONFIG: Array<Config> = [
-  { label: "Data", href: "/data-source", icon: "FileText" },
+  { label: "Data", href: "/data", icon: "FileText" },
   { label: "Chat", href: "/chat", icon: "MessagesSquare" },
   { label: "Docs", href: "/docs", icon: "Code2" },
 ];

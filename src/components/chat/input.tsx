@@ -2,21 +2,22 @@
 
 import React from "react";
 
+import useSession from "@/hooks/use-session";
+
 import { Input } from "../ui/input";
-import { useHotkeys, useId } from "@mantine/hooks";
+import { useHotkeys } from "@mantine/hooks";
 import { useChat } from "ai/react";
 
 export function ChatInput() {
+  const { session } = useSession();
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const sessionId = useId();
   const { input, handleInputChange, handleSubmit } = useChat({
-    id: "dreamslab",
+    id: "default",
     headers: {
-      "api-key": "dreamslab",
+      "api-key": session?.user.id!,
     },
     body: {
       question: inputRef.current?.value,
-      sessionId,
     },
   });
 
@@ -25,24 +26,14 @@ export function ChatInput() {
   const kbd = React.useRef<HTMLDivElement>(null);
 
   useHotkeys([
-    ["mod+enter", onModEnterAi],
-    // ["enter", onModEnter],
+    ["mod+enter", onEnter],
+    ["enter", onEnter],
   ]);
 
-  // function onModEnter() {
-  //   kbd.current?.setAttribute("data-active", "true");
-
-  //   form.current?.submit();
-
-  //   setTimeout(() => {
-  //     kbd.current?.setAttribute("data-active", "false");
-  //   }, 500);
-  // }
-
-  function onModEnterAi() {
+  function onEnter() {
     kbd.current?.setAttribute("data-active", "true");
 
-    form.current?.submit();
+    form.current?.requestSubmit();
 
     setTimeout(() => {
       kbd.current?.setAttribute("data-active", "false");
@@ -51,10 +42,10 @@ export function ChatInput() {
 
   function inputKeyListeners(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter" && e.metaKey) {
-      onModEnterAi();
+      onEnter();
       return;
     }
-    // if (e.key === "Enter" && !e.metaKey) onModEnter();
+    if (e.key === "Enter" && !e.metaKey) onEnter();
   }
 
   return (
@@ -64,9 +55,9 @@ export function ChatInput() {
           value={input}
           ref={inputRef}
           onChange={handleInputChange}
-          // onKeyDown={inputKeyListeners}
+          onKeyDown={inputKeyListeners}
           placeholder="ask anything to the AI"
-          className="pr-8"
+          className="pr-14 "
         />
       </form>
       <kbd

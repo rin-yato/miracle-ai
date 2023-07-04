@@ -1,5 +1,6 @@
-import { ChromaClient } from "chromadb";
 import { NextResponse } from "next/server";
+
+import { ChromaClient } from "chromadb";
 
 export async function DELETE(
   request: Request,
@@ -27,14 +28,26 @@ export async function GET(
   const { id: collectionName } = params;
 
   const client = new ChromaClient();
-  const collection = await client.getCollection({
-    name: collectionName,
-  });
 
-  const collectionItems = await collection.get();
+  let collection;
+
+  try {
+    collection = await client.getOrCreateCollection({
+      name: collectionName,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      return NextResponse.json({
+        status: "Im not ok 😞",
+        message: error.message,
+      });
+    }
+
+    return NextResponse.error();
+  }
 
   return NextResponse.json({
     status: "OK",
-    data: collectionItems,
+    data: collection,
   });
 }

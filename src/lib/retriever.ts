@@ -1,4 +1,3 @@
-import { env } from "@/env.mjs";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { Chroma } from "langchain/vectorstores/chroma";
 
@@ -7,7 +6,9 @@ type RetrieverOptions = {
 };
 
 export function Retriever(options: RetrieverOptions) {
-  const embeddings = new OpenAIEmbeddings();
+  const embeddings = new OpenAIEmbeddings({
+    openAIApiKey: process.env.OPENAI_API_KEY,
+  });
 
   const chroma = new Chroma(embeddings, {
     collectionName: options.collection,

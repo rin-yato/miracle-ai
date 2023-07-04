@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { createContext, useState } from "react";
 
@@ -20,7 +20,7 @@ export function Chat() {
 
   return (
     <ChatOpenContext.Provider value={{ isChatOpen, setIsChatOpen }}>
-      <motion.div layout className="fixed bottom-10 right-10">
+      <motion.div layout className="fixed bottom-10 right-10 z-50">
         <AnimatePresence mode="wait">
           {!isChatOpen && (
             <motion.div

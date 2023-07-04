@@ -1,14 +1,12 @@
 import { cn } from "@/lib/utils";
 
-import { Sidebar } from "@/components/sidebar";
-import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
 
 import "@/styles/global.css";
 
 import { Inter } from "next/font/google";
 
-import { Chat } from "@/components/chat";
+import ConfirmDialog from "@/components/confirm-dialog";
 
 import { Toaster } from "react-hot-toast";
 
@@ -28,13 +26,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={cn(inter.className, "flex min-h-screen flex-col")}>
         <Toaster />
-        <Chat />
+        <ConfirmDialog />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <SiteHeader />
-          <div className="flex flex-1">
-            <Sidebar />
-            {children}
-          </div>
+          {children}
         </ThemeProvider>
       </body>
     </html>

@@ -41,6 +41,9 @@ export async function POST(request: Request) {
   });
 
   const validLinks = strippedLinks.filter((link: string) => {
+    if (!link) return false; // filter out empty links
+
+    // filter out links that don't end with a valid extension
     const invalidExtensions = [
       ".jpg",
       ".png",
@@ -59,7 +62,6 @@ export async function POST(request: Request) {
       ".txt",
       ".pdf",
     ] as const;
-
     if (
       invalidExtensions.some((extension) => {
         return link.endsWith(extension);
@@ -68,24 +70,28 @@ export async function POST(request: Request) {
       return false;
     }
 
-    if (!link) return false;
+    // filter out links that start with a invalid string
+    const invalidStartsWith = [
+      "/#",
+      "./#",
+      "/index#",
+      "tel:",
+      "data:",
+      "mailto:",
+      url + "/wp-json",
+      url + "/wp-content",
+      url + "/wp-includes",
+    ];
+    if (invalidStartsWith.some((startsWith) => link.startsWith(startsWith))) {
+      return false;
+    }
 
-    if (link.startsWith("/index#")) return false;
-
-    if (link.startsWith(url + "/wp-content")) return false;
-    if (link.startsWith(url + "/wp-includes")) return false;
-    if (link.startsWith(url + "/wp-json")) return false;
-
-    if (link.startsWith("/#")) return false;
-
-    if (link.startsWith("./#")) return false;
-
+    // return true if the link is valid
     if (link.startsWith("./")) return true;
-
     if (link.startsWith(url)) return true;
-
     if (link.startsWith("/")) return true;
 
+    // otherwise return false
     return false;
   });
 
@@ -106,8 +112,8 @@ export async function POST(request: Request) {
       return link;
     }
   });
-  // return NextResponse.json({ allLinks });
 
+  // remove duplicate links
   const finalLinks = removeDuplicateLinks([url, ...allLinks]);
 
   return NextResponse.json({
