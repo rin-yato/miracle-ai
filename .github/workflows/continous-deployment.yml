@@ -1,24 +1,24 @@
-# name: Continous Deployment
+name: Continous Deployment
 
-# on:
-#   push:
-#     branches:
-#       - main
-#   pull_request:
-#     branches:
-#       - main
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
-# jobs:
-#   remote-pull:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: pulling code updates
-#         uses: appleboy/ssh-action@master
-#         with:
-#           host: ${{ secrets.HOST }}
-#           username: ${{ secrets.USERNAME }}
-#           key: ${{ secrets.KEY }}
-#           script: |
-#             cd /root/factoryx-store-front
-#             git pull origin main
-#             docker compose up -d --build
+jobs:
+  remote-pull:
+    runs-on: ubuntu-latest
+    steps:
+      - name: pulling code updates
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            cd /root/ai
+            git pull origin main
+            docker compose up -d --build
