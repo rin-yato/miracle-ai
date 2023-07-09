@@ -12,6 +12,7 @@ export function Retriever(options: RetrieverOptions) {
 
   const chroma = new Chroma(embeddings, {
     collectionName: options.collection,
+    url: "http://188.166.229.246:8000"
   });
 
   return chroma;
