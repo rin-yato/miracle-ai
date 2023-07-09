@@ -1,16 +1,16 @@
 docker-compose.yml
-Dockerfile
-Dockerfile.1
 
-yarn.lock
+Dockerfile
 
 node_modules
-
 
 .next
 
 .dockerignore
+
 npm-debug.log
+
 README.md
+
 .git
 

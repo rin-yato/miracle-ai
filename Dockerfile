@@ -1,5 +1,5 @@
 # Declare base image
-FROM node:18-alpine AS base
+FROM node:18.16.1-alpine AS base
 
 # ---- STAGE: Install Dependencies ---- #
 FROM base AS deps
@@ -11,8 +11,16 @@ WORKDIR /app
 
 # Install pnpm, copy package.json and install dependencies
 RUN yarn global add pnpm
-COPY package.json pnpm-lock.yaml* ./
-RUN pnpm install --frozen-lockfile
+COPY package.json pnpm-lock.yaml ./
+
+# Install python, make, and g++ for building native dependencies
+# after installing, remove them to reduce image size
+RUN apk add --no-cache --virtual .gyp \
+        py3-pip \
+        make \
+        g++ \
+    && pnpm install --frozen-lockfile \
+    && apk del .gyp
 
 
 # ---- STAGE: Build and Compile ---- #
@@ -30,6 +38,9 @@ COPY . .
 # Disable NextJs telemetry
 ENV NEXT_TELEMETRY_DISABLED 1
 
+# Install python
+# RUN apk update && apk add python3
+
 RUN yarn build
 
 
@@ -41,6 +52,8 @@ WORKDIR /app
 # Set node environment to production and disable telemetry
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
+
+# RUN apk update && apk add python3
 
 # Install pm2 runtime
 RUN yarn global add pm2
