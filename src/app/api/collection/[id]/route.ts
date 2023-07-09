@@ -1,18 +1,21 @@
 import { NextResponse } from "next/server";
 
-import { ChromaClient } from "chromadb";
+import { chroma } from "@/lib/chroma";
 
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const client = new ChromaClient();
+  const client = chroma();
   const { id: collectionName } = params;
 
   try {
     await client.deleteCollection({ name: collectionName });
   } catch (error) {
-    return NextResponse.json(error);
+    return NextResponse.json(error, {
+      status: 400,
+      statusText: "Bad Request",
+    });
   }
 
   return NextResponse.json({
@@ -27,7 +30,7 @@ export async function GET(
 ) {
   const { id: collectionName } = params;
 
-  const client = new ChromaClient();
+  const client = chroma();
 
   let collection;
 
@@ -36,14 +39,16 @@ export async function GET(
       name: collectionName,
     });
   } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json({
+    return NextResponse.json(
+      {
         status: "Im not ok 😞",
-        message: error.message,
-      });
-    }
-
-    return NextResponse.error();
+        message: error,
+      },
+      {
+        status: 400,
+        statusText: "Bad Request",
+      }
+    );
   }
 
   return NextResponse.json({

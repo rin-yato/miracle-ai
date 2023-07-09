@@ -1,6 +1,10 @@
 "use client";
 
+import React from "react";
+
 import { Table } from "@/types/schema";
+
+import useDocument from "@/hooks/use-documents";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
@@ -8,7 +12,7 @@ import { DataTableColumnHeader } from "@/components/data-table/column-header";
 import { FacetedFilterOption } from "@/components/data-table/faceted-filter";
 
 import { DocumentsRowActions } from "../../components/documents-row-actions";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 
 export const statusOptions: Array<FacetedFilterOption> = [
   { label: "Trained", value: "trained" },
@@ -49,7 +53,7 @@ export const DocumentsColumns: ColumnDef<DataSource>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader minimal column={column} title="Activation" />
     ),
-    cell: ({ row }) => <Switch defaultChecked={row.getValue("activation")} />,
+    cell: ({ row }) => <ToggleActivation row={row} />,
   },
   {
     accessorKey: "last_trained",
@@ -66,3 +70,22 @@ export const DocumentsColumns: ColumnDef<DataSource>[] = [
     cell: ({ row }) => <DocumentsRowActions row={row} />,
   },
 ];
+
+function ToggleActivation({ row }: { row: Row<DataSource> }) {
+  const { toggleActivation } = useDocument();
+  const [checked, setChecked] = React.useState(row.original.activation);
+
+  return (
+    <Switch
+      defaultChecked={row.getValue("activation")}
+      checked={checked ?? false}
+      onCheckedChange={async (value) => {
+        setChecked((prev) => !prev);
+        const res = await toggleActivation(row.original.id, value);
+        if (!res) {
+          setChecked((prev) => !prev);
+        }
+      }}
+    />
+  );
+}

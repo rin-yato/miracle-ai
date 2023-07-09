@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  web:
+    container_name: nextjs
+    build:
+      context: ./
+    restart: always
+    ports:
+      - "3000:3000"

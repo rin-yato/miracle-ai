@@ -2,6 +2,9 @@
 
 import { useContext } from "react";
 
+import useConfig from "@/hooks/use-config";
+import useSession from "@/hooks/use-session";
+
 import { ChatOpenContext } from ".";
 import { Separator } from "../ui/separator";
 import { ChatHeader } from "./header";
@@ -12,6 +15,11 @@ import { useClickOutside } from "@mantine/hooks";
 export function ChatBox() {
   const { setIsChatOpen } = useContext(ChatOpenContext);
   // const ref = useClickOutside(() => setIsChatOpen(false));
+  const { session } = useSession();
+  const { config } = useConfig();
+
+  if (!session?.user.id) return null;
+
   return (
     <div
       // ref={ref}
@@ -20,7 +28,11 @@ export function ChatBox() {
       <ChatHeader />
       <Separator className="mt-2" />
       <ChatList />
-      <ChatInput />
+      <ChatInput
+        noAnswer={config?.no_answer}
+        prompt={config?.prompt}
+        userId={session?.user.id}
+      />
     </div>
   );
 }

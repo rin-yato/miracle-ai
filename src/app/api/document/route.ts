@@ -1,15 +1,17 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { DB } from "@/types/schema";
+import { chroma } from "@/lib/chroma";
+import { scraper } from "@/lib/scraper";
+import {
+  getRouteHandlerUser,
+  supabaseRouteHandler,
+} from "@/lib/supabase.server";
 
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { env } from "@/env.mjs";
 import axios from "axios";
-import { ChromaClient } from "chromadb";
-import { convert } from "html-to-text";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { OpenAIEmbeddingFunction } from "chromadb";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { Chroma } from "langchain/vectorstores/chroma";
+import { nanoid } from "nanoid";
 import { z } from "zod";
 
 const itemGetRequestSchema = z.object({
@@ -23,7 +25,7 @@ export async function GET(request: Request) {
 
   const { collection: collectionName, id } = validatedBody;
 
-  const client = new ChromaClient();
+  const client = chroma();
 
   const collection = await client.getCollection({
     name: collectionName,
@@ -41,7 +43,6 @@ export async function GET(request: Request) {
 
 const createItemSchema = z.object({
   url: z.string(),
-  collection: z.string().optional(),
 });
 
 export async function POST(request: Request) {
@@ -49,38 +50,38 @@ export async function POST(request: Request) {
   const validatedBody = createItemSchema.parse(body);
 
   // scrape website then load the document
-  const response = await axios.get(validatedBody.url);
-  const htmlContent = convert(response.data);
-
-  // initialize supabase
-  const supabase = createRouteHandlerClient<DB>({ cookies });
+  const htmlContent = await scraper(validatedBody.url);
 
   // get current authenticated user
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user?.id) {
-    return NextResponse.json({
-      status: "ERROR",
-      message: "User not found",
-    });
-  }
+  const user = await getRouteHandlerUser();
 
   // create the document in the database
-  const { data: newDocument } = await supabase
-    .from("documents")
-    .insert({
-      url: validatedBody.url,
-      activation: true,
-      user_id: user.id,
-      last_trained: new Date().toISOString(),
-    })
-    .select()
-    .single();
-  if (!newDocument?.id) {
-    return NextResponse.json({
-      status: "ERROR",
-      message: "Document not created",
+  let newDocument;
+
+  try {
+    const { data } = await supabaseRouteHandler
+      .from("documents")
+      .insert({
+        url: validatedBody.url,
+        activation: true,
+        user_id: user.id,
+        last_trained: new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (!data?.id) {
+      return NextResponse.json("Could not create document.", {
+        status: 400,
+        statusText: "Bad Request",
+      });
+    }
+
+    newDocument = data;
+  } catch (error) {
+    return NextResponse.json(error, {
+      status: 400,
+      statusText: "Bad Request",
     });
   }
 
@@ -94,29 +95,39 @@ export async function POST(request: Request) {
   const documents = await splitter.createDocuments(
     [htmlContent],
     // default status is active, and the id is taken from supabase
-    [{ status: "active", id: newDocument.id.toString() }]
+    [{ id: newDocument.id.toString() }]
   );
 
   // Check if collection exists otherwise create it
   try {
     await axios.get("http://localhost:3000/api/collection/" + user.id);
   } catch (error) {
-    return NextResponse.json({
-      status: "ERROR",
-      message: error,
+    return NextResponse.json(error, {
+      status: 400,
+      statusText: "Bad Request",
     });
   }
 
+  // initialize openai embeddings
+  const embedder = new OpenAIEmbeddingFunction({
+    openai_api_key: env.OPENAI_API_KEY,
+  });
+
+  // initialize chroma
+  const client = chroma();
+
+  // get the collection
+  const collection = await client.getCollection({
+    name: user.id,
+    embeddingFunction: embedder,
+  });
+
   // Saving the document into chroma
-  await Chroma.fromDocuments(
-    documents,
-    new OpenAIEmbeddings({
-      openAIApiKey: process.env.OPENAI_API_KEY,
-    }),
-    {
-      collectionName: user.id, // collection name is the user id
-    }
-  );
+  await collection.add({
+    ids: documents.map((_) => nanoid()),
+    documents: documents.map((document) => document.pageContent),
+    metadatas: documents.map((document) => document.metadata),
+  });
 
   return NextResponse.json({
     stauts: "OK",

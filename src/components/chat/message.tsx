@@ -2,6 +2,8 @@ import { cn } from "@/lib/utils";
 import { Message } from "ai";
 
 import moment from "moment";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 type Props = Partial<Message> & { displayDate?: boolean };
 
@@ -23,7 +25,11 @@ export function Message({ role, content, createdAt, displayDate }: Props) {
           twBorderRadius
         )}
       >
-        {content}
+        <ReactMarkdown remarkPlugins={ [remarkGfm] } linkTarget="_blank" components={ {
+          a: ({node, ...props}) => <a {...props} className="text-blue-500 hover:underline" />
+        }}>
+        {content as string}
+        </ReactMarkdown>
       </div>
       {displayDate && (
         <p className={cn("px-2 pt-0.5 text-xs ", !isAI && "ml-auto")}>

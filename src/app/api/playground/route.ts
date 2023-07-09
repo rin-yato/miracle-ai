@@ -21,12 +21,6 @@ export async function GET() {
     name: "73da1ec8-8b7f-4f3e-92dd-0963ede6d7a5",
   });
 
-  // await collection.delete({
-  //   where: {
-  //     id: "42",
-  //   },
-  // });
-
   const res = await cc.get();
 
   return NextResponse.json(res);

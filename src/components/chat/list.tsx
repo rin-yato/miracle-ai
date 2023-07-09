@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 
 import { Message } from "./message";
 import { useSessionStorage } from "@mantine/hooks";

@@ -1,13 +1,6 @@
-import { NextResponse } from "next/server";
-
 import { removeDuplicateLinks } from "@/lib/utils";
 
 import axios from "axios";
-import { z } from "zod";
-
-const getLinksSchema = z.object({
-  url: z.string(),
-});
 
 function lintingUrl(url: string) {
   let res = "";
@@ -24,16 +17,13 @@ function lintingUrl(url: string) {
   return res;
 }
 
-export async function POST(request: Request) {
-  const body = await request.json();
-  const validatedBody = getLinksSchema.parse(body);
+export async function generateUrls(url: string) {
+  const sanitizedUrl = lintingUrl(url);
 
-  const url = lintingUrl(validatedBody.url);
-  console.log(url);
-
-  const res = (await axios.get(url)).data;
+  // set no-cors to true to prevent CORS errors
+  const html = (await axios.post("/api/fetch", { url: sanitizedUrl })).data;
   // get the links from the response
-  const links = res.match(/href="([^"]*)"/g);
+  const links = html.match(/href="([^"]*)"/g);
 
   // strip the href=" and " from the links
   const strippedLinks = links.map((link: string) => {
@@ -78,9 +68,9 @@ export async function POST(request: Request) {
       "tel:",
       "data:",
       "mailto:",
-      url + "/wp-json",
-      url + "/wp-content",
-      url + "/wp-includes",
+      sanitizedUrl + "/wp-json",
+      sanitizedUrl + "/wp-content",
+      sanitizedUrl + "/wp-includes",
     ];
     if (invalidStartsWith.some((startsWith) => link.startsWith(startsWith))) {
       return false;
@@ -88,7 +78,7 @@ export async function POST(request: Request) {
 
     // return true if the link is valid
     if (link.startsWith("./")) return true;
-    if (link.startsWith(url)) return true;
+    if (link.startsWith(sanitizedUrl)) return true;
     if (link.startsWith("/")) return true;
 
     // otherwise return false
@@ -98,26 +88,23 @@ export async function POST(request: Request) {
   const allLinks = validLinks.map((link: string) => {
     if (link.startsWith("/")) {
       if (link.endsWith("/")) {
-        return url + link.slice(0, -1);
+        return sanitizedUrl + link.slice(0, -1);
       }
-      return url + link;
+      return sanitizedUrl + link;
     }
     if (link.startsWith("./")) {
       if (link.endsWith("/")) {
-        return url + link.slice(0, -1).slice(1);
+        return sanitizedUrl + link.slice(0, -1).slice(1);
       }
-      return url + link.slice(1);
+      return sanitizedUrl + link.slice(1);
     }
-    if (link.startsWith(url)) {
+    if (link.startsWith(sanitizedUrl)) {
       return link;
     }
   });
 
   // remove duplicate links
-  const finalLinks = removeDuplicateLinks([url, ...allLinks]);
+  const finalLinks = removeDuplicateLinks([sanitizedUrl, ...allLinks]);
 
-  return NextResponse.json({
-    status: "OK",
-    data: finalLinks,
-  });
+  return finalLinks;
 }

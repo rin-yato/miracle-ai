@@ -13,23 +13,27 @@ const CONFIG = {
   },
   smallheading: {
     tag: "h2",
-    tw: "scroll-m-20 text-2xl font-semibold tracking-tight",
+    tw: "scroll-m-20 text-lg font-semibold tracking-tight",
   },
   title: {
     tag: "h3",
-    tw: "scroll-m-20 text-lg font-semibold tracking-tight",
+    tw: "scroll-m-20 text-base font-semibold tracking-tight",
   },
   caption: {
     tag: "h4",
-    tw: "scroll-m-20 text-lg font-medium tracking-tight",
+    tw: "scroll-m-20 text-base font-medium tracking-tight",
   },
   body: {
     tag: "p",
-    tw: "leading-7",
+    tw: "leading-6 text-sm",
+  },
+  small: {
+    tag: "p",
+    tw: "leading-6 text-xs",
   },
   paragraph: {
     tag: "p",
-    tw: "leading-7 [&:not(:first-child)]:mt-6",
+    tw: "leading-7 text-sm [&:not(:first-child)]:mt-6",
   },
 } as const;
 

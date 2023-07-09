@@ -34,6 +34,40 @@ export interface Database {
   }
   public: {
     Tables: {
+      configs: {
+        Row: {
+          created_at: string | null
+          id: number
+          no_answer: string | null
+          prompt: string | null
+          update_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          no_answer?: string | null
+          prompt?: string | null
+          update_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          no_answer?: string | null
+          prompt?: string | null
+          update_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "configs_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       documents: {
         Row: {
           activation: boolean | null

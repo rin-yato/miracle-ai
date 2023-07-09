@@ -1,4 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+
+import { chroma } from "@/lib/chroma";
 
 import { env } from "@/env.mjs";
 import { ChromaClient, OpenAIEmbeddingFunction } from "chromadb";
@@ -6,19 +8,13 @@ import { z } from "zod";
 
 export async function GET() {
   const client = new ChromaClient();
+
   const collections = await client.listCollections();
 
-  return NextResponse.json(
-    {
-      status: "OK",
-      collections,
-    },
-    {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
-    }
-  );
+  return NextResponse.json({
+    status: "OK",
+    collections,
+  });
 }
 
 const createCollectionSchema = z.object({
@@ -35,11 +31,18 @@ export async function POST(request: Request) {
   });
 
   // create the collection
-  const client = new ChromaClient();
-  const createdCollection = await client.createCollection({
-    name: validatedBody.collection,
-    embeddingFunction,
-  });
+  const client = chroma();
+  try {
+    await client.createCollection({
+      name: validatedBody.collection,
+      embeddingFunction,
+    });
+  } catch (error) {
+    return NextResponse.json(error, {
+      status: 400,
+      statusText: "Bad Request",
+    });
+  }
 
   return NextResponse.json(
     {

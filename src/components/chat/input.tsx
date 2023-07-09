@@ -2,22 +2,27 @@
 
 import React from "react";
 
-import useSession from "@/hooks/use-session";
-
 import { Input } from "../ui/input";
 import { useHotkeys } from "@mantine/hooks";
 import { useChat } from "ai/react";
 
-export function ChatInput() {
-  const { session } = useSession();
+
+type Props = {
+  userId: string;
+  prompt: string | undefined | null;
+  noAnswer: string | undefined | null;
+}
+
+export function ChatInput({ userId, prompt, noAnswer }: Props) {
   const inputRef = React.useRef<HTMLInputElement>(null);
+
   const { input, handleInputChange, handleSubmit } = useChat({
     id: "default",
-    headers: {
-      "api-key": session?.user.id!,
-    },
     body: {
       question: inputRef.current?.value,
+      userId,
+      prompt,
+      noAnswer,
     },
   });
 
