@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { chroma } from "@/lib/chroma";
+import getHost from "@/lib/get-host";
 import { scraper } from "@/lib/scraper";
 import {
   getRouteHandlerUser,
@@ -100,7 +101,7 @@ export async function POST(request: Request) {
 
   // Check if collection exists otherwise create it
   try {
-    await axios.get("http://localhost:3000/api/collection/" + user.id);
+    await axios.get(getHost(request) + "/api/collection/" + user.id);
   } catch (error) {
     return NextResponse.json(error, {
       status: 400,

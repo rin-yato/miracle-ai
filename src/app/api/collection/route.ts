@@ -3,11 +3,11 @@ import { NextResponse } from "next/server";
 import { chroma } from "@/lib/chroma";
 
 import { env } from "@/env.mjs";
-import { ChromaClient, OpenAIEmbeddingFunction } from "chromadb";
+import { OpenAIEmbeddingFunction } from "chromadb";
 import { z } from "zod";
 
 export async function GET() {
-  const client = new ChromaClient();
+  const client = chroma();
 
   const collections = await client.listCollections();
 

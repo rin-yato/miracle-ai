@@ -4,7 +4,7 @@ import { Retriever } from "@/lib/retriever";
 
 import { ChromaClient } from "chromadb";
 
-export async function GET() {
+export async function POST() {
   if (process.env.NODE_ENV === "production") {
     return NextResponse.json({
       status: "😳",
