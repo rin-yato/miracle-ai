@@ -15,7 +15,7 @@ COPY package.json pnpm-lock.yaml ./
 
 # Install python, make, and g++ for building native dependencies
 # after installing, remove them to reduce image size
-RUN apk add --no-cache --virtual .gyp \
+RUN apk add \
         py3-pip \
         make \
         g++ \
@@ -41,14 +41,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # Install python
 # RUN apk update && apk add python3
 
-# RUN yarn build
-
-RUN apk add --no-cache --virtual .gyp \
-        py3-pip \
-        make \
-        g++ \
-    && yarn build \
-    && apk del .gyp
+RUN yarn build
 
 
 # ---- STAGE: Production ---- #
