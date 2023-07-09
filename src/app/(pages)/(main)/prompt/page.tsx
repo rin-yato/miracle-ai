@@ -9,7 +9,7 @@ import Text from "@/components/ui/text";
 import { AdvanceConfig } from "./components/advance-config";
 
 export default function PromptPage() {
-  const { config, update, isLoading } = useConfig();
+  const { config, isLoading } = useConfig();
 
   if (isLoading) {
     return null;

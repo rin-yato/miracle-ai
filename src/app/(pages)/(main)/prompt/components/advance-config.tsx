@@ -1,4 +1,5 @@
 import React from "react";
+import { useRouter } from "next/navigation";
 
 import { AI_PROMPT, NO_ANSWER_RESPONSE } from "@/lib/constant/prompts";
 import useConfig from "@/hooks/use-config";
@@ -32,6 +33,7 @@ type Props = {
 
 export function AdvanceConfig({ prompt, noAnswer }: Props) {
   const { update } = useConfig();
+  const router = useRouter();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -49,6 +51,16 @@ export function AdvanceConfig({ prompt, noAnswer }: Props) {
     });
   }
 
+  function handleReset(values: Partial<z.infer<typeof formSchema>>) {
+    const formValues = form.getValues();
+    toast.promise(update({ ...values }), {
+      loading: "Resetting changes...",
+      success: "Changes resetted!",
+      error: "Failed to reset changes.",
+    });
+    router.refresh();
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -57,7 +69,17 @@ export function AdvanceConfig({ prompt, noAnswer }: Props) {
           name="prompt"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>AI Prompt</FormLabel>
+              <div className="flex items-end justify-between pb-0.5">
+                <FormLabel>AI Prompt</FormLabel>
+                <Button
+                  type="button"
+                  variant="link"
+                  className="h-fit p-0"
+                  onClick={() => handleReset({ prompt: AI_PROMPT })}
+                >
+                  reset
+                </Button>
+              </div>
               <FormControl>
                 <Textarea
                   placeholder="Intructions for the AI to follow."
@@ -78,7 +100,17 @@ export function AdvanceConfig({ prompt, noAnswer }: Props) {
           name="noAnswer"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>No Answer Response</FormLabel>
+              <div className="flex items-end justify-between pb-0.5">
+                <FormLabel>No Answer Response</FormLabel>
+                <Button
+                  type="button"
+                  variant="link"
+                  className="h-fit p-0"
+                  onClick={() => handleReset({ noAnswer: NO_ANSWER_RESPONSE })}
+                >
+                  reset
+                </Button>
+              </div>
               <FormControl>
                 <Textarea
                   placeholder="Enter a response for when the AI doesn't know how to answer the question."
