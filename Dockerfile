@@ -41,7 +41,14 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # Install python
 # RUN apk update && apk add python3
 
-RUN yarn build
+# RUN yarn build
+
+RUN apk add --no-cache --virtual .gyp \
+        py3-pip \
+        make \
+        g++ \
+    && yarn build \
+    && apk del .gyp
 
 
 # ---- STAGE: Production ---- #
