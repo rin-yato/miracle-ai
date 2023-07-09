@@ -2,10 +2,9 @@ version: "3.8"
 
 services:
   web:
-    container_name: nextjs
-    pull_policy: build
-    build:
-      context: ./
+    container_name: ai-site
+    image: rinyato/ai-site:latest
     restart: always
     ports:
       - "3000:3000"
+    command: pm2-runtime node server.js
