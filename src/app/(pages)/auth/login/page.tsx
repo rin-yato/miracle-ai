@@ -4,6 +4,8 @@ import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { getBaseUrl } from "@/lib/base-url";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -22,7 +24,6 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Provider } from "@supabase/supabase-js";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { getBaseUrl } from "@/lib/base-url";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -35,6 +36,8 @@ export default function LoginPage() {
   const [isEmailAuth, setIsEmailAuth] = React.useState<boolean>(false);
 
   const router = useRouter();
+
+  const redirectUrl = getBaseUrl() + "/api/auth/callback";
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -75,7 +78,7 @@ export default function LoginPage() {
       await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: getBaseUrl() + "/api/auth/callback",
+          redirectTo: redirectUrl,
         },
       });
     } catch (error) {

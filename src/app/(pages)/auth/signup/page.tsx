@@ -38,6 +38,8 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [isEmailAuth, setIsEmailAuth] = React.useState<boolean>(false);
 
+  const redirectUrl = getBaseUrl() + "/api/auth/callback";
+
   const form = useForm({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -81,7 +83,7 @@ export default function SignUpPage() {
       await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: getBaseUrl() + "/api/auth/callback",
+          redirectTo: redirectUrl,
         },
       });
     } catch (error) {
