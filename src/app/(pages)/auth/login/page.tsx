@@ -22,6 +22,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Provider } from "@supabase/supabase-js";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { getBaseUrl } from "@/lib/base-url";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -74,7 +75,7 @@ export default function LoginPage() {
       await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: location.origin + "/api/auth/callback",
+          redirectTo: getBaseUrl() + "/api/auth/callback",
         },
       });
     } catch (error) {

@@ -4,6 +4,8 @@ import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { getBaseUrl } from "@/lib/base-url";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -57,7 +59,7 @@ export default function SignUpPage() {
           data: {
             username: values.username,
           },
-          emailRedirectTo: location.origin + "/api/auth/callback",
+          emailRedirectTo: getBaseUrl() + "/api/auth/callback",
         },
       });
       router.push("/auth/check-email");
@@ -79,7 +81,7 @@ export default function SignUpPage() {
       await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: location.origin + "/api/auth/callback",
+          redirectTo: getBaseUrl() + "/api/auth/callback",
         },
       });
     } catch (error) {
