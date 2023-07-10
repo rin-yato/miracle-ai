@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   }
 
   if (process.env.NODE_ENV === "production") {
-    return NextResponse.redirect(process.env.SITE_URL!);
+    return NextResponse.redirect("https://ai.just-miracle.space");
   }
   return NextResponse.redirect(requestUrl.origin);
 }
