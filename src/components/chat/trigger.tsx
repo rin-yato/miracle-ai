@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useContext } from "react";
 
@@ -23,7 +23,7 @@ export function ChatTrigger() {
             variant="outline"
             className="aspect-square h-fit w-fit rounded-full  p-3"
           >
-            <Icons.MessagesSquare size="32" className="text-sky-800" />
+            <Icons.Atom size="32" className="text-sky-800" />
           </Button>
         </TooltipTrigger>
         <TooltipContent>

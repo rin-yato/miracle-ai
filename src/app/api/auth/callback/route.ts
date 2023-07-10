@@ -13,10 +13,8 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
-  return NextResponse.json({
-    origin: requestUrl.origin,
-    url: requestUrl,
-    code,
-  });
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.redirect(process.env.SITE_URL!);
+  }
   return NextResponse.redirect(requestUrl.origin);
 }
