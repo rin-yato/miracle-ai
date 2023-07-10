@@ -57,7 +57,7 @@ export default function SignUpPage() {
           data: {
             username: values.username,
           },
-          emailRedirectTo: location.host + "/api/auth/callback",
+          emailRedirectTo: location.origin + "/api/auth/callback",
         },
       });
       router.push("/auth/check-email");
@@ -79,7 +79,7 @@ export default function SignUpPage() {
       await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: location.host + "/api/auth/callback",
+          redirectTo: location.origin + "/api/auth/callback",
         },
       });
     } catch (error) {
