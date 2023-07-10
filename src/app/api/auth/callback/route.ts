@@ -13,5 +13,6 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
+  return NextResponse.json(request);
   return NextResponse.redirect(requestUrl.origin);
 }
