@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import {
   AI_PROMPT,
@@ -104,6 +104,7 @@ Answer:
   return new StreamingTextResponse(stream, {
     headers: {
       "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
     },
   });
 }
