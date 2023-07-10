@@ -39,6 +39,7 @@ export default function SignUpPage() {
   const [isEmailAuth, setIsEmailAuth] = React.useState<boolean>(false);
 
   const redirectUrl = getBaseUrl() + "/api/auth/callback";
+  console.log("redirectUrl", redirectUrl);
 
   const form = useForm({
     resolver: zodResolver(signupSchema),
