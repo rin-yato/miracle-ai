@@ -18,6 +18,9 @@ export async function GET(
     return NextResponse.json(error, {
       status: 400,
       statusText: "Bad Request",
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
     });
   }
 }
