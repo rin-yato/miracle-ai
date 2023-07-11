@@ -23,7 +23,7 @@ import { z } from "zod";
 
 const formSchema = z.object({
   prompt: z.string(),
-  noAnswer: z.string(),
+  no_answer: z.string(),
 });
 
 type Props = {
@@ -39,13 +39,13 @@ export function AdvanceConfig({ prompt, noAnswer }: Props) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       prompt: prompt || AI_PROMPT,
-      noAnswer: noAnswer || NO_ANSWER_RESPONSE,
+      no_answer: noAnswer || NO_ANSWER_RESPONSE,
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     toast.promise(
-      update({ no_answer: values.noAnswer, prompt: values.prompt }),
+      update({ no_answer: values.no_answer, prompt: values.prompt }),
       {
         loading: "Saving changes...",
         success: "Changes saved!",
@@ -55,11 +55,20 @@ export function AdvanceConfig({ prompt, noAnswer }: Props) {
   }
 
   function handleReset(values: Partial<z.infer<typeof formSchema>>) {
-    const formValues = form.getValues();
-    toast.promise(update({ ...values }), {
-      loading: "Resetting changes...",
-      success: "Changes resetted!",
-      error: "Failed to reset changes.",
+    toast.promise(
+      update({
+        ...values,
+      }),
+      {
+        loading: "Resetting changes...",
+        success: "Changes resetted!",
+        error: "Failed to reset changes.",
+      }
+    );
+    const currentValues = form.getValues();
+    form.reset({
+      ...currentValues,
+      ...values,
     });
     router.refresh();
   }
@@ -100,7 +109,7 @@ export function AdvanceConfig({ prompt, noAnswer }: Props) {
         />
         <FormField
           control={form.control}
-          name="noAnswer"
+          name="no_answer"
           render={({ field }) => (
             <FormItem>
               <div className="flex items-end justify-between pb-0.5">
@@ -109,7 +118,7 @@ export function AdvanceConfig({ prompt, noAnswer }: Props) {
                   type="button"
                   variant="link"
                   className="h-fit p-0"
-                  onClick={() => handleReset({ noAnswer: NO_ANSWER_RESPONSE })}
+                  onClick={() => handleReset({ no_answer: NO_ANSWER_RESPONSE })}
                 >
                   reset
                 </Button>
