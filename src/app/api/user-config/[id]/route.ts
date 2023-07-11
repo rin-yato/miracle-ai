@@ -13,14 +13,15 @@ export async function GET(
       .eq("user_id", params.id)
       .single();
 
-    return NextResponse.json(data);
+    return NextResponse.json(data, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
   } catch (error) {
     return NextResponse.json(error, {
       status: 400,
       statusText: "Bad Request",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
     });
   }
 }
