@@ -44,11 +44,14 @@ export function AdvanceConfig({ prompt, noAnswer }: Props) {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    toast.promise(update({ ...values }), {
-      loading: "Saving changes...",
-      success: "Changes saved!",
-      error: "Failed to save changes.",
-    });
+    toast.promise(
+      update({ no_answer: values.noAnswer, prompt: values.prompt }),
+      {
+        loading: "Saving changes...",
+        success: "Changes saved!",
+        error: "Failed to save changes.",
+      }
+    );
   }
 
   function handleReset(values: Partial<z.infer<typeof formSchema>>) {

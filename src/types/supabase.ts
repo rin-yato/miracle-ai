@@ -36,26 +36,38 @@ export interface Database {
     Tables: {
       configs: {
         Row: {
+          avatar: string | null
           created_at: string | null
+          hide_avatar: boolean | null
           id: number
+          name: string | null
           no_answer: string | null
           prompt: string | null
+          theme: string | null
           update_at: string | null
           user_id: string | null
         }
         Insert: {
+          avatar?: string | null
           created_at?: string | null
+          hide_avatar?: boolean | null
           id?: number
+          name?: string | null
           no_answer?: string | null
           prompt?: string | null
+          theme?: string | null
           update_at?: string | null
           user_id?: string | null
         }
         Update: {
+          avatar?: string | null
           created_at?: string | null
+          hide_avatar?: boolean | null
           id?: number
+          name?: string | null
           no_answer?: string | null
           prompt?: string | null
+          theme?: string | null
           update_at?: string | null
           user_id?: string | null
         }

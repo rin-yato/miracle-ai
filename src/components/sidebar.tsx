@@ -16,8 +16,9 @@ type Config = {
 };
 const CONFIG: Array<Config> = [
   { label: "Data", href: "/data", icon: "FileText" },
-  { label: "Prompt", href: "/prompt", icon: "BookMarked" },
-  { label: "Docs", href: "/docs", icon: "Code2" },
+  { label: "Prompt", href: "/prompt", icon: "Dna" },
+  { label: "Appearance", href: "/appearance", icon: "Contrast" },
+  { label: "Docs", href: "/docs", icon: "BookMarked" },
 ];
 
 export function Sidebar() {
