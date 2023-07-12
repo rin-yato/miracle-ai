@@ -26,7 +26,7 @@ export async function DELETE(
     });
   }
 
-  const client = new ChromaClient();
+  const client = chroma();
 
   const collection = await client.getCollection({
     name: user?.id,
