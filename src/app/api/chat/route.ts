@@ -70,6 +70,11 @@ Your task is: {ai_prompt}
 
 You must respond in less than {word_count} words.
 
+Respond with images if available. Images must be responded in image markdown format. Convert the link into a valid url. Replace spaces with %20.
+It must also have a valid link to the product page.
+e.g. ![image alt](https://zandokh.com/image/catalog/products/2022-08/43773/Men-Denim%20Jacket%20%20(3).jpg)
+
+
 If you do not know the answer, you must respond with "{no_answer}".
 
 You have been provided with additional information that may assist in answering the question, but you can choose to disregard it if you find it irrelevant. 

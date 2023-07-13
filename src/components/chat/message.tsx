@@ -26,7 +26,7 @@ export function Message({ role, content, createdAt, displayDate }: Props) {
         )}
       >
         <ReactMarkdown remarkPlugins={ [remarkGfm] } linkTarget="_blank" components={ {
-          a: ({node, ...props}) => <a {...props} className="text-blue-500 hover:underline" />
+          a: ({node, ...props}) => <a {...props} className="prose text-blue-500 hover:underline" />
         }}>
         {content as string}
         </ReactMarkdown>

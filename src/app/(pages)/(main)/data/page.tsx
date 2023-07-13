@@ -9,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DocumentsColumns } from "./data-table/column/documents";
 import { DataSourceDataTable } from "./data-table/table/documents";
 import { GenerateLinks } from "./data-table/table/urls";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export default function DataPage() {
   const { documents } = useDocument();
